@@ -1,4 +1,4 @@
-import { aiService } from '@/services/aiService';
+import { getAiService } from '@/services/aiService';
 import { parseResume } from '@/services/parser';
 import {
   DifficultyLevel,
@@ -13,10 +13,6 @@ export interface PreparedInterviewSession {
   questionBank: InterviewQuestion[];
 }
 
-/**
- * End-to-end session bootstrap: resume parse → question bank generation.
- * Surfaces structured errors for UI error boundaries.
- */
 export async function prepareInterviewSession(
   setup: InterviewSetupInput
 ): Promise<AiResult<PreparedInterviewSession>> {
@@ -29,7 +25,7 @@ export async function prepareInterviewSession(
     return parseResult;
   }
 
-  const questionResult = await aiService.generateQuestionBank({
+  const questionResult = await getAiService().generateQuestionBank({
     role: setup.targetRole,
     jobDescription: setup.jobDescription,
     resumeProfile: parseResult.data,

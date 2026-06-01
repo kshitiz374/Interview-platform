@@ -6,7 +6,7 @@ import {
   type QuestionCategory,
   type ResponseEvaluation,
 } from '@/types/interview';
-import { clampMetric } from '@/utils/scoringAlgorithms';
+import { clampMetric } from '@/utils/metrics';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

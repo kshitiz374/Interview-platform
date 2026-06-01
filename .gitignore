@@ -4,10 +4,16 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+build/
 *.local
 
 # Vite
 .vite/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
 
 # Logs
 logs/
@@ -16,26 +22,62 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Environment (never commit secrets)
-.env
-.env.*
-!.env.example
-
-# Editor / OS
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/*
-!.vscode/extensions.json
+lerna-debug.log*
 
 # TypeScript
 *.tsbuildinfo
 
-# Test / coverage
+# Test & coverage
 coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
 
-# Misc
+# Editor & AI-assisted dev tools (do not commit)
+.cursor/
+.cursorrules
+.cursorignore
+.bolt/
+bolt_lock.json
+.devin/
+.windsurf/
+.v0/
+.replit
+replit.nix
+*.prompt.md
+
+# IDE
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Package managers (keep one lockfile; ignore alternates)
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+
+# Misc caches
+.cache/
+.parcel-cache/
+.turbo/
 *.swp
 *.swo
-.cache/
+*~
+
+# Local diagnostics
+scripts/check-page.mjs

@@ -1,4 +1,5 @@
-export { aiService, createAiService, createAiProvider, resolveProviderFromEnv } from './aiService';
+export { createAiService, getAiService } from './aiService';
+export { createAiProvider, resolveProviderFromEnv } from './ai/aiClient';
 export type { AiService, CreateAiServiceOptions } from './aiService';
 export {
   parseResume,

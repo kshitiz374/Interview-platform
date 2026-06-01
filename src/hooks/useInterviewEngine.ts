@@ -8,7 +8,11 @@ import {
   InterviewEventType,
   InterviewLifecycleState,
   isTerminalState,
+  type EarlyTerminationReason,
+  type FinalReadinessReport,
   type InterviewEvent,
+  type InterviewQuestion,
+  type ParsedResumeProfile,
   type ResponseEvaluation,
   type UseInterviewEngineOptions,
   type UseInterviewEngineReturn,
@@ -20,79 +24,31 @@ import {
 } from '@/utils/scoringAlgorithms';
 
 export interface UseInterviewEngineActions {
-  /**
-   * IDLE → PARSING_INPUTS
-   * Begins resume/JD ingestion. UI should call parsing service, then dispatch result.
-   */
   startParsing: (payload: {
     resumeText: string;
     jobDescription: string;
     targetRole: string;
   }) => void;
-
-  /** PARSING_INPUTS → READY */
   completeParsing: (
-    parsedResume: import('@/types/interview').ParsedResumeProfile,
-    questionBank: import('@/types/interview').InterviewQuestion[]
+    parsedResume: ParsedResumeProfile,
+    questionBank: InterviewQuestion[]
   ) => void;
-
-  /** PARSING_INPUTS → IDLE */
   failParsing: (error: string, recoverable?: boolean) => void;
-
-  /**
-   * READY → QUESTION_ACTIVE
-   * Starts session clock and activates question 0.
-   */
   beginInterview: () => void;
-
-  /**
-   * QUESTION_ACTIVE → EVALUATING_RESPONSE
-   * Caller must follow with `applyEvaluation` (AI) or use `handleTimerExpiry`.
-   */
   submitAnswer: (answerText: string, elapsedMs: number) => void;
-
-  /**
-   * QUESTION_ACTIVE → EVALUATING_RESPONSE → (auto) EVALUATION_COMPLETE
-   * Applies deterministic timeout scoring (0% on all metrics).
-   */
   handleTimerExpiry: (elapsedMs: number) => void;
-
-  /**
-   * EVALUATING_RESPONSE → QUESTION_ACTIVE | READY | TERMINATED_EARLY
-   * Merges AI evaluation into history and runs adaptation / early-exit checks.
-   */
   applyEvaluation: (evaluation: ResponseEvaluation) => void;
-
-  /** EVALUATING_RESPONSE → QUESTION_ACTIVE (recoverable failure) */
   failEvaluation: (error: string) => void;
-
-  /** READY → QUESTION_ACTIVE (manual re-activation after last question) */
   activateQuestion: (questionIndex: number) => void;
-
-  /** * → TERMINATED_EARLY */
-  terminateEarly: (
-    reason: import('@/types/interview').EarlyTerminationReason
-  ) => void;
-
-  /** * → COMPLETED */
-  completeInterview: (
-    report: import('@/types/interview').FinalReadinessReport
-  ) => void;
-
-  /** * → IDLE */
+  terminateEarly: (reason: EarlyTerminationReason) => void;
+  completeInterview: (report: FinalReadinessReport) => void;
   reset: () => void;
-
-  /** Low-level escape hatch for custom orchestration. */
   dispatch: (event: InterviewEvent) => void;
 }
 
 export type UseInterviewEngineResult = UseInterviewEngineReturn &
   UseInterviewEngineActions;
 
-/**
- * Central interview FSM orchestrator.
- * All domain transitions flow through the reducer; UI only calls action helpers.
- */
 export function useInterviewEngine(
   options: UseInterviewEngineOptions
 ): UseInterviewEngineResult {
@@ -134,10 +90,7 @@ export function useInterviewEngine(
   );
 
   const completeParsing = useCallback(
-    (
-      parsedResume: import('@/types/interview').ParsedResumeProfile,
-      questionBank: import('@/types/interview').InterviewQuestion[]
-    ) => {
+    (parsedResume: ParsedResumeProfile, questionBank: InterviewQuestion[]) => {
       dispatchWithTimestamp({
         type: InterviewEventType.PARSING_COMPLETE,
         timestamp: Date.now(),
@@ -259,7 +212,7 @@ export function useInterviewEngine(
   );
 
   const terminateEarly = useCallback(
-    (reason: import('@/types/interview').EarlyTerminationReason) => {
+    (reason: EarlyTerminationReason) => {
       dispatchWithTimestamp({
         type: InterviewEventType.TERMINATE_EARLY,
         timestamp: Date.now(),
@@ -273,7 +226,7 @@ export function useInterviewEngine(
   );
 
   const completeInterview = useCallback(
-    (report: import('@/types/interview').FinalReadinessReport) => {
+    (report: FinalReadinessReport) => {
       dispatchWithTimestamp({
         type: InterviewEventType.COMPLETE_INTERVIEW,
         timestamp: Date.now(),

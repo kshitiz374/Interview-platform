@@ -1,4 +1,4 @@
-import { aiService } from '@/services/aiService';
+import { getAiService } from '@/services/aiService';
 import type {
   AiResult,
   ParseResumeRequest,
@@ -26,10 +26,7 @@ const SKILL_KEYWORDS = [
 const EXPERIENCE_PATTERN =
   /(\d{1,2})\+?\s*(?:years|yrs)(?:\s+of)?\s+(?:experience|exp)/i;
 
-/**
- * Heuristic, offline-safe resume parser.
- * Used as fallback when AI is unavailable or returns invalid payloads.
- */
+/** Rule-based resume parser used when the remote provider is unavailable. */
 export function parseResumeHeuristic(
   request: ParseResumeRequest
 ): ParsedResumeProfile {
@@ -50,10 +47,6 @@ export function parseResumeHeuristic(
   };
 }
 
-/**
- * Primary resume parse entry point.
- * Attempts AI extraction first; falls back to heuristic parsing on failure.
- */
 export async function parseResume(
   request: ParseResumeRequest,
   options: { preferAi?: boolean } = {}
@@ -61,7 +54,7 @@ export async function parseResume(
   const preferAi = options.preferAi ?? true;
 
   if (preferAi) {
-    const aiResult = await aiService.parseResumeWithAi(
+    const aiResult = await getAiService().parseResumeWithAi(
       request.rawText,
       request.targetRole
     );

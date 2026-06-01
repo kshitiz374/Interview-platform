@@ -1,13 +1,12 @@
 {
-  "name": "ai-mock-interview-platform",
+  "name": "mock-interview-studio",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "lint": "eslint ."
+    "preview": "vite preview"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.2",

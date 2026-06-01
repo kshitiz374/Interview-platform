@@ -31,10 +31,6 @@ export interface UseInterviewOrchestratorReturn {
   finalizeSessionIfNeeded: () => void;
 }
 
-/**
- * Session orchestration without the per-question timer.
- * Timer logic lives in ActiveInterviewPanel to avoid hook side-effects during setup.
- */
 export function useInterviewOrchestrator(
   options: UseInterviewOrchestratorOptions
 ): UseInterviewOrchestratorReturn {

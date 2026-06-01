@@ -19,7 +19,6 @@ import {
   type ScoringWeights,
 } from '@/types/interview';
 
-/** Ephemeral submission captured between SUBMIT/TIMER and EVALUATION_COMPLETE. */
 export interface PendingSubmission {
   answerText: string;
   submittedAtMs: number;
@@ -50,22 +49,6 @@ export function createInitialEngineState(
   };
 }
 
-/**
- * Pure FSM reducer for the interview lifecycle.
- *
- * Valid transitions:
- *   IDLE ──START_PARSING──► PARSING_INPUTS
- *   PARSING_INPUTS ──PARSING_COMPLETE──► READY
- *   PARSING_INPUTS ──PARSING_FAILED──► IDLE
- *   READY ──BEGIN_INTERVIEW──► QUESTION_ACTIVE
- *   READY ──ACTIVATE_QUESTION──► QUESTION_ACTIVE
- *   QUESTION_ACTIVE ──SUBMIT_RESPONSE / TIMER_EXPIRED──► EVALUATING_RESPONSE
- *   EVALUATING_RESPONSE ──EVALUATION_COMPLETE──► READY | QUESTION_ACTIVE | TERMINATED_EARLY
- *   EVALUATING_RESPONSE ──EVALUATION_FAILED──► QUESTION_ACTIVE
- *   * ──COMPLETE_INTERVIEW──► COMPLETED
- *   * ──TERMINATE_EARLY──► TERMINATED_EARLY
- *   * ──RESET──► IDLE
- */
 export function interviewReducer(
   state: InterviewEngineState,
   event: InterviewEvent
@@ -374,7 +357,6 @@ function applyEvaluationOutcome(
   };
 }
 
-/** Build a response record from a pending submission + AI evaluation. */
 export function buildRecordFromPending(
   state: InterviewEngineState,
   evaluation: ResponseEvaluation

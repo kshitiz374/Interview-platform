@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useInterviewTimer } from '@/hooks/useInterviewTimer';
 import type { UseInterviewEngineResult } from '@/hooks/useInterviewEngine';
-import { aiService } from '@/services/aiService';
+import { getAiService } from '@/services/aiService';
 import { InterviewLifecycleState } from '@/types/interview';
 import { createTimeoutEvaluation } from '@/utils/scoringAlgorithms';
 
@@ -92,7 +92,7 @@ export function ActiveInterviewPanel({
     engine.submitAnswer(answerText, elapsedMs);
     setIsEvaluating(true);
 
-    const evalResult = await aiService.evaluateResponse({
+      const evalResult = await getAiService().evaluateResponse({
       question,
       answerText,
       submissionStatus: 'complete',

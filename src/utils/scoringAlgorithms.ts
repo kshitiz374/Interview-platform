@@ -10,6 +10,9 @@ import {
   type ResponseEvaluation,
   type ScoringWeights,
 } from '@/types/interview';
+import { clampMetric } from '@/utils/metrics';
+
+export { clampMetric } from '@/utils/metrics';
 
 export const READINESS_THRESHOLDS = {
   STRONG: 75,
@@ -24,15 +27,6 @@ export interface TimeEfficiencyInput {
   submissionStatus: AnswerSubmissionStatus;
 }
 
-/** Clamp a metric into the canonical 0–100 range. */
-export function clampMetric(value: number): number {
-  return Math.min(
-    SCORING_THRESHOLDS.MAX_METRIC,
-    Math.max(SCORING_THRESHOLDS.MIN_METRIC, Math.round(value))
-  );
-}
-
-/** Weighted composite score across evaluation dimensions. */
 export function computeCompositeScore(
   evaluation: ResponseEvaluation,
   weights: ScoringWeights = DEFAULT_SCORING_WEIGHTS
@@ -47,7 +41,6 @@ export function computeCompositeScore(
   return clampMetric(raw);
 }
 
-/** Arithmetic mean of all recorded composite scores (0 when empty). */
 export function computeMovingAverage(scores: readonly number[]): number {
   if (scores.length === 0) {
     return 0;
@@ -107,9 +100,6 @@ export function applyDifficultyAdaptation(
   };
 }
 
-/**
- * Early termination gate: moving average below 40% after at least 3 answers.
- */
 export function shouldTerminateEarly(
   answeredCount: number,
   movingAverageScore: number
@@ -120,10 +110,6 @@ export function shouldTerminateEarly(
   );
 }
 
-/**
- * Deterministic time-efficiency score (0–100).
- * Timeout submissions always receive 0%.
- */
 export function computeTimeEfficiencyScore(input: TimeEfficiencyInput): number {
   if (input.submissionStatus === 'timeout') {
     return SCORING_THRESHOLDS.TIMEOUT_SCORE;
@@ -148,7 +134,6 @@ export function computeTimeEfficiencyScore(input: TimeEfficiencyInput): number {
   return SCORING_THRESHOLDS.TIMEOUT_SCORE;
 }
 
-/** Merges AI content scores with deterministic time-efficiency. */
 export function applyTimeEfficiencyToEvaluation(
   evaluation: ResponseEvaluation,
   input: TimeEfficiencyInput
@@ -159,7 +144,6 @@ export function applyTimeEfficiencyToEvaluation(
   };
 }
 
-/** Deterministic evaluation payload when the per-question timer expires. */
 export function createTimeoutEvaluation(): ResponseEvaluation {
   return {
     accuracy: SCORING_THRESHOLDS.TIMEOUT_SCORE,

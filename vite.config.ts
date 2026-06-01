@@ -12,4 +12,8 @@ export default defineConfig({
       '@': path.resolve(projectRoot, 'src'),
     },
   },
+  server: {
+    port: 5173,
+    strictPort: false,
+  },
 });

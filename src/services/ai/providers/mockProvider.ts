@@ -1,6 +1,5 @@
 import type { AiProvider, CompletionRequest } from '@/services/ai/providers/types';
 
-/** Deterministic 32-bit FNV-1a hash for reproducible mock output. */
 function hashString(input: string): number {
   let hash = 2_166_136_261;
   for (let i = 0; i < input.length; i += 1) {
@@ -15,10 +14,7 @@ function pick<T>(items: readonly T[], seed: string): T {
   return items[index] as T;
 }
 
-/**
- * Offline provider for local development and tests.
- * Returns valid JSON without external API calls.
- */
+/** Local provider that returns structured JSON without external API calls. */
 export class MockAiProvider implements AiProvider {
   readonly name = 'mock';
 

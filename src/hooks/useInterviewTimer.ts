@@ -15,16 +15,7 @@ const createIdleState = (totalMs: number): TimerState => ({
   elapsedMs: 0,
 });
 
-/**
- * Per-question countdown with millisecond precision.
- *
- * Uses `performance.now()` anchors instead of decrementing by a fixed delta,
- * which avoids drift when the main thread is busy.
- *
- * Lifecycle:
- *   IDLE ──start()──► RUNNING ──pause()──► PAUSED
- *   RUNNING ──(remainingMs <= 0)──► EXPIRED ──onExpire()
- */
+/** Countdown driven by a `performance.now()` deadline to limit timer drift. */
 export function useInterviewTimer(
   options: UseInterviewTimerOptions
 ): UseInterviewTimerReturn {

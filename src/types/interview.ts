@@ -1,11 +1,6 @@
-/**
- * Domain types for the AI-powered mock interview platform.
- * All interview lifecycle, scoring, and evaluation contracts live here.
- */
+/** Interview session domain model (lifecycle, scoring, provider contracts). */
 
-// ---------------------------------------------------------------------------
 // Difficulty & readiness
-// ---------------------------------------------------------------------------
 
 export enum DifficultyLevel {
   EASY = 'EASY',
@@ -15,9 +10,7 @@ export enum DifficultyLevel {
 
 export type ReadinessStatus = 'Strong' | 'Average' | 'Needs Improvement';
 
-// ---------------------------------------------------------------------------
-// FSM: states & events
-// ---------------------------------------------------------------------------
+// Lifecycle states & events
 
 export enum InterviewLifecycleState {
   IDLE = 'IDLE',
@@ -29,7 +22,6 @@ export enum InterviewLifecycleState {
   TERMINATED_EARLY = 'TERMINATED_EARLY',
 }
 
-/** Events that drive valid FSM transitions. */
 export enum InterviewEventType {
   START_PARSING = 'START_PARSING',
   PARSING_COMPLETE = 'PARSING_COMPLETE',
@@ -160,9 +152,7 @@ export type InterviewEvent =
   | CompleteInterviewEvent
   | ResetEvent;
 
-// ---------------------------------------------------------------------------
-// Input parsing & questions
-// ---------------------------------------------------------------------------
+// Questions & resume
 
 export interface ParsedResumeProfile {
   candidateName: string;
@@ -197,12 +187,9 @@ export type QuestionCategory =
   | 'problem-solving'
   | 'role-fit';
 
-// ---------------------------------------------------------------------------
-// Runtime context (FSM snapshot)
-// ---------------------------------------------------------------------------
+// Session context
 
 export interface InterviewContext {
-  /** Current FSM state. */
   lifecycleState: InterviewLifecycleState;
   /** Zero-based index of the active or next question. */
   currentQuestionIndex: number;
@@ -255,9 +242,7 @@ export const INITIAL_INTERVIEW_CONTEXT: InterviewContext = {
   sessionEndedAt: null,
 };
 
-// ---------------------------------------------------------------------------
-// Responses, evaluation & scoring thresholds
-// ---------------------------------------------------------------------------
+// Evaluation & scoring
 
 export type AnswerSubmissionStatus = 'complete' | 'incomplete' | 'timeout';
 
@@ -299,7 +284,6 @@ export const DEFAULT_SCORING_WEIGHTS: ScoringWeights = {
   timeEfficiency: 0.1,
 };
 
-/** Domain constants for adaptation & early termination (pure config, no magic in UI). */
 export const SCORING_THRESHOLDS = {
   HIGH_SCORE: 80,
   LOW_SCORE: 50,
@@ -327,9 +311,7 @@ export interface FinalReadinessReport {
   isHirable: boolean;
 }
 
-// ---------------------------------------------------------------------------
-// Timer hook contracts
-// ---------------------------------------------------------------------------
+// Timer
 
 export enum TimerStatus {
   IDLE = 'IDLE',
@@ -362,9 +344,7 @@ export interface UseInterviewTimerReturn {
   isExpired: boolean;
 }
 
-// ---------------------------------------------------------------------------
-// Engine hook contracts
-// ---------------------------------------------------------------------------
+// Engine hooks
 
 export interface UseInterviewEngineOptions {
   setup: InterviewSetupInput;
@@ -380,9 +360,7 @@ export interface UseInterviewEngineReturn {
   finalReport: FinalReadinessReport | null;
 }
 
-// ---------------------------------------------------------------------------
-// AI service contracts
-// ---------------------------------------------------------------------------
+// LLM provider
 
 export interface GenerateQuestionRequest {
   role: string;
@@ -411,9 +389,7 @@ export type AiResult<T> =
   | { success: true; data: T }
   | { success: false; error: AiServiceError };
 
-// ---------------------------------------------------------------------------
-// Parser service contracts
-// ---------------------------------------------------------------------------
+// Resume parser
 
 export interface ParseResumeRequest {
   rawText: string;
@@ -422,9 +398,7 @@ export interface ParseResumeRequest {
 
 export type ParseResumeResult = AiResult<ParsedResumeProfile>;
 
-// ---------------------------------------------------------------------------
-// Utility type guards & helpers
-// ---------------------------------------------------------------------------
+// Helpers
 
 export const TERMINAL_LIFECYCLE_STATES: readonly InterviewLifecycleState[] = [
   InterviewLifecycleState.COMPLETED,

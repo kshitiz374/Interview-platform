@@ -56,8 +56,14 @@ export function createAiService(options: CreateAiServiceOptions = {}): AiService
   return new InterviewAiService(provider);
 }
 
-/** Default singleton for app-wide use. */
-export const aiService = createAiService();
+let defaultAiService: AiService | null = null;
+
+export function getAiService(): AiService {
+  if (!defaultAiService) {
+    defaultAiService = createAiService();
+  }
+  return defaultAiService;
+}
 
 class InterviewAiService implements AiService {
   constructor(private readonly provider: AiProvider) {}
@@ -208,4 +214,3 @@ function invalidPayloadError(message: string): Error {
   return err;
 }
 
-export { createAiProvider, resolveProviderFromEnv } from '@/services/ai/aiClient';
